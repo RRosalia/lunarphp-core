@@ -2,11 +2,16 @@
 
 namespace Lunar\Base\Traits;
 
+use App\Domain\Enum\Context\MiddlewareContext;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Illuminate\Database\Eloquent\Relations\MorphOne;
+use Illuminate\Support\Facades\Context;
 use Lunar\Models\Url;
 
+/**
+ * @property-read \App\Domain\Models\Url $url
+ */
 trait HasUrls
 {
     /**
@@ -41,11 +46,13 @@ trait HasUrls
         );
     }
 
-    public function defaultUrl(): MorphOne
+    public function url(): MorphOne
     {
         return $this->morphOne(
             Url::modelClass(),
             'element'
-        )->whereDefault(true);
+        )->when(Context::has(MiddlewareContext::WEBSITE_SERVING), function ($query) {
+            $query->withWhereHas('language', fn ($builder) => $builder->where('code', app()->getLocale()));
+        });
     }
 }

@@ -2,6 +2,7 @@
 
 namespace Lunar\Managers;
 
+use App\Infrastructure\Repositories\Contract\CurrencyTenantContract;
 use Illuminate\Auth\AuthManager;
 use Illuminate\Contracts\Auth\Authenticatable;
 use Illuminate\Session\SessionManager;
@@ -21,6 +22,7 @@ class CartSessionManager implements CartSessionInterface
         protected Channel $channel,
         protected Currency $currency,
         public Cart $cart,
+        protected CurrencyTenantContract $currencyTenantContract,
     ) {
         //
     }
@@ -218,7 +220,9 @@ class CartSessionManager implements CartSessionInterface
      */
     public function getCurrency(): Currency
     {
-        return $this->currency?->exists ? $this->currency : Currency::getDefault();
+        return $this->currency?->exists ? $this->currency : $this->currencyTenantContract->getDefaultCurrency(
+            tenant()->getKey()
+        );
     }
 
     /**
