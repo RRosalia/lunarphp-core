@@ -2,25 +2,28 @@
 
 namespace Lunar\Base\Casts;
 
+use App\Infrastructure\Repositories\Contract\CurrencyContract;
 use Illuminate\Contracts\Database\Eloquent\CastsAttributes;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Validator;
 use Lunar\DataTypes\Price as PriceDataType;
-use Lunar\Models\Currency;
 
 class Price implements CastsAttributes
 {
     /**
      * Cast the given value.
      *
-     * @param  \Illuminate\Database\Eloquent\Model  $model
+     * @param  Model  $model
      * @param  string  $key
      * @param  mixed  $value
      * @param  array  $attributes
-     * @return \Lunar\DataTypes\Price
+     * @return PriceDataType
      */
     public function get($model, $key, $value, $attributes)
     {
-        $currency = $model->currency ?: Currency::getDefault();
+        /** @var CurrencyContract $contract */
+        $contract = app(CurrencyContract::class);
+        $currency = $model->currency ?: $contract->getDefaultCurrency();
 
         if (! is_null($value)) {
             /**
@@ -45,9 +48,9 @@ class Price implements CastsAttributes
     /**
      * Prepare the given value for storage.
      *
-     * @param  \Illuminate\Database\Eloquent\Model  $model
+     * @param  Model  $model
      * @param  string  $key
-     * @param  \Lunar\DataTypes\Price  $value
+     * @param  PriceDataType  $value
      * @param  array  $attributes
      * @return array
      */
