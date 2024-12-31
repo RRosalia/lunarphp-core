@@ -12,6 +12,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasManyThrough;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Support\Carbon;
 use Lunar\Base\BaseModel;
 use Lunar\Base\Casts\AsAttributeData;
 use Lunar\Base\Traits\HasChannels;
@@ -22,7 +23,6 @@ use Lunar\Base\Traits\HasTags;
 use Lunar\Base\Traits\HasTranslations;
 use Lunar\Base\Traits\HasUrls;
 use Lunar\Base\Traits\LogsActivity;
-use Lunar\Base\Traits\Searchable;
 use Lunar\Database\Factories\ProductFactory;
 use Lunar\Jobs\Products\Associations\Associate;
 use Lunar\Jobs\Products\Associations\Dissociate;
@@ -34,9 +34,9 @@ use Spatie\MediaLibrary\HasMedia as SpatieHasMedia;
  * @property int $product_type_id
  * @property string $status
  * @property array $attribute_data
- * @property ?\Illuminate\Support\Carbon $created_at
- * @property ?\Illuminate\Support\Carbon $updated_at
- * @property ?\Illuminate\Support\Carbon $deleted_at
+ * @property ?Carbon $created_at
+ * @property ?Carbon $updated_at
+ * @property ?Carbon $deleted_at
  */
 class Product extends BaseModel implements Contracts\Product, SpatieHasMedia
 {
@@ -49,7 +49,6 @@ class Product extends BaseModel implements Contracts\Product, SpatieHasMedia
     use HasTranslations;
     use HasUrls;
     use LogsActivity;
-    use Searchable;
     use SoftDeletes;
 
     /**
