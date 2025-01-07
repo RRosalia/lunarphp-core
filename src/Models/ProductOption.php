@@ -3,14 +3,13 @@
 namespace Lunar\Models;
 
 use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\Casts\AsArrayObject;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Support\Carbon;
 use Lunar\Base\BaseModel;
 use Lunar\Base\Traits\HasMacros;
 use Lunar\Base\Traits\HasMedia;
-use Lunar\Base\Traits\HasTranslations;
 use Lunar\Base\Traits\Searchable;
 use Lunar\Database\Factories\ProductOptionFactory;
 use Spatie\MediaLibrary\HasMedia as SpatieHasMedia;
@@ -21,15 +20,16 @@ use Spatie\MediaLibrary\HasMedia as SpatieHasMedia;
  * @property \Illuminate\Support\Collection $label
  * @property int $position
  * @property ?string $handle
- * @property ?\Illuminate\Support\Carbon $created_at
- * @property ?\Illuminate\Support\Carbon $updated_at
+ * @property ?Carbon $created_at
+ * @property ?Carbon $updated_at
  */
 class ProductOption extends BaseModel implements Contracts\ProductOption, SpatieHasMedia
 {
     use HasFactory;
     use HasMacros;
     use HasMedia;
-    use HasTranslations;
+
+//    use HasTranslations;
     use Searchable;
 
     /**
@@ -38,8 +38,8 @@ class ProductOption extends BaseModel implements Contracts\ProductOption, Spatie
      * @var array
      */
     protected $casts = [
-        'name' => AsArrayObject::class,
-        'label' => AsArrayObject::class,
+//        'name' => AsArrayObject::class,
+//        'label' => AsArrayObject::class,
         'shared' => 'boolean',
     ];
 
