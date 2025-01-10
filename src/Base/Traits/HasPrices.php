@@ -3,10 +3,14 @@
 namespace Lunar\Base\Traits;
 
 use Illuminate\Database\Eloquent\Relations\MorphMany;
+use Illuminate\Database\Eloquent\Relations\MorphOne;
 use Lunar\Facades\Pricing;
 use Lunar\Managers\PricingManager;
 use Lunar\Models\Price;
 
+/**
+ * @property-read \App\Domain\Models\Price $price
+ */
 trait HasPrices
 {
     /**
@@ -15,6 +19,14 @@ trait HasPrices
     public function prices(): MorphMany
     {
         return $this->morphMany(
+            Price::modelClass(),
+            'priceable'
+        );
+    }
+
+    public function price(): MorphOne
+    {
+        return $this->morphOne(
             Price::modelClass(),
             'priceable'
         );
