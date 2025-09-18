@@ -3,6 +3,7 @@
 namespace Lunar\Base\Traits;
 
 use App\Domain\Enum\Context\MiddlewareContext;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Illuminate\Database\Eloquent\Relations\MorphOne;
@@ -53,6 +54,16 @@ trait HasUrls
             'element'
         )->when(Context::has(MiddlewareContext::WEBSITE_SERVING), function ($query) {
             $query->withWhereHas('language', fn ($builder) => $builder->where('code', app()->getLocale()));
+        });
+    }
+
+    public function localeUrl(?string $locale = null): MorphOne
+    {
+        return $this->morphOne(
+            Url::modelClass(),
+            'element'
+        )->whereHas('language', function (Builder $query) use ($locale) {
+            $query->where('code', $locale ?: app()->getLocale());
         });
     }
 }

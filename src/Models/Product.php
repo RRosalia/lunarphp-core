@@ -10,11 +10,13 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasManyThrough;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Carbon;
 use Lunar\Base\BaseModel;
 use Lunar\Base\Casts\AsAttributeData;
+use Lunar\Base\HasThumbnailImage;
 use Lunar\Base\Traits\HasChannels;
 use Lunar\Base\Traits\HasCustomerGroups;
 use Lunar\Base\Traits\HasMacros;
@@ -33,12 +35,12 @@ use Spatie\MediaLibrary\HasMedia as SpatieHasMedia;
  * @property ?int $brand_id
  * @property int $product_type_id
  * @property string $status
- * @property array $attribute_data
- * @property ?Carbon $created_at
- * @property ?Carbon $updated_at
- * @property ?Carbon $deleted_at
+ * @property ?\Illuminate\Support\Collection $attribute_data
+ * @property ?\Illuminate\Support\Carbon $created_at
+ * @property ?\Illuminate\Support\Carbon $updated_at
+ * @property ?\Illuminate\Support\Carbon $deleted_at
  */
-class Product extends BaseModel implements Contracts\Product, SpatieHasMedia
+class Product extends BaseModel implements Contracts\Product, HasThumbnailImage, SpatieHasMedia
 {
     use HasChannels;
     use HasCustomerGroups;
@@ -111,12 +113,24 @@ class Product extends BaseModel implements Contracts\Product, SpatieHasMedia
         return $this->hasMany(ProductVariant::modelClass());
     }
 
+    public function variant(): HasOne
+    {
+        return $this->hasOne(ProductVariant::modelClass());
+    }
+
+    protected function hasVariants(): Attribute
+    {
+        return Attribute::make(
+            get: fn () => $this->variants()->count() > 1,
+        );
+    }
+
     public function collections(): BelongsToMany
     {
         return $this->belongsToMany(
             \Lunar\Models\Collection::modelClass(),
             config('lunar.database.table_prefix').'collection_product'
-        )->withPivot(['position'])->withTimestamps();
+        )->withPivot(['position'])->orderByPivot('position')->withTimestamps();
     }
 
     public function associations(): HasMany
@@ -196,5 +210,10 @@ class Product extends BaseModel implements Contracts\Product, SpatieHasMedia
             ProductOption::modelClass(),
             "{$prefix}product_product_option"
         )->withPivot(['position'])->orderByPivot('position');
+    }
+
+    public function getThumbnailImage(): string
+    {
+        return $this->thumbnail?->getUrl('small') ?? '';
     }
 }
